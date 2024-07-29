@@ -1,5 +1,5 @@
 {% extends 'base/base.html' %}
-{% block title %}Home{% endblock title %}
+{% block title %}{{user.username|capfirst}} Home{% endblock title %}
 {% block content %}
 <div style="width: 99%;" class="px-3 mt-2">
     <div class="row">

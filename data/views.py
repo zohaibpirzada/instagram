@@ -13,7 +13,7 @@ def index(request):
     if request.user.is_authenticated:
         following = request.user.profile.follow.all()
         user = request.user
-        following_post = UserPost.objects.filter(user__profile__in=following).order_by('-created_date')
+        following_post = UserPost.objects.filter(user__profile__in=following).order_by('?')
         context = {"following_post" : following_post, "following" : following}
         return render(request, 'index.html', context)
     else:
