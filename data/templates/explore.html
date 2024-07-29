@@ -1,0 +1,125 @@
+{% extends 'base/base.html' %}
+{% block title %}Explore{% endblock title %}
+{% block content %}
+<div style="width: 99%;" class="px-3 mt-2">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row row-gap-2">
+                {% for posts in post %}
+                {% if posts.Title %}
+                <div class="col-md-3">
+                    <div class="card hover-shadow">
+                        <style>
+                            .hover-shadow {
+                                overflow: hidden;
+                            }
+
+                            .hover-overly {
+                                position: relative;
+                            }
+
+                            .overly {
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                background: #000000be;
+                                transition: all 0.3s;
+                                opacity: 0;
+                                z-index: 0;
+                            }
+
+                            .hover-overly:hover>.overly {
+                                transition: all 0.3s;
+                                opacity: 100;
+                                z-index: 2;
+                            }
+
+                            .overly-img {
+                                object-fit: cover;
+                                position: relative;
+                                z-index: 1;
+                            }
+
+                            /*.hover-overly:hover > .overly-img {
+                        object-fit: contain;
+                    } */
+                        </style>
+                        <div class="w-100 d-flex align-items-center justify-content-center hover-overly hover-zoom "
+                            style="height:400px;">
+                            <img src="{{posts.post_image.url}}" class="overly-img w-100 h-100"
+                                style="object-position: 50% 25%;" alt="{{posts.Title}}">
+                            <div class="overly d-flex flex-column align-items-center justify-content-center">
+                                <a href="{% url 'post_page' posts.id %}"
+                                    style="text-decoration: none; position: relative;"
+                                    class="w-100 h-100 text-light d-flex align-items-center justify-content-center column-gap-2">
+                                    <span class="fs-3"> <small>{{posts.like.count}}</small>
+                                        {% if request.user in posts.like.all %}
+                                        <i class="bi text-danger bi-heart-fill "></i>
+                                        {% else %}
+                                        <i class="bi text-danger bi-heart "></i>
+                                        {% endif %}
+                                    </span>
+                                    {% if posts.comment.count == 0%}
+                                    <span class="fs-3"><i class="bi text-light bi-chat-fill "></i></span>
+                                    {% else %}
+                                    <span class="fs-3"> <small>{{posts.comment.count}}</small> <i class="bi text-light bi-chat-fill "></i></span>
+                                    {% endif %}
+                                    {% if request.user.id == posts.user.id %}
+                                    <span class="fs-5 position-absolute"
+                                        style="width: 30; top: 0; right: 1%; z-index: 3;">
+                                        {{posts.post_status}}
+                                        {% if posts.post_status == "Public" %}
+                                        <i class="fa-solid fa-unlock fs-5"></i>
+                                        {% else %}
+                                        <i class="fa-solid fa-lock fs-5"></i>
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="card text-center">
+                <div class="card-header">
+                    <b>Suggested</b> Peoples
+                </div>
+                <div class="card-body">
+                    {% for profile in profiles %}
+                    <div class="d-flex column-gap-3">
+                        <div class="col-2">
+                            <a href="{% url 'profile' profile.user.username %}">
+                                <img src="{{profile.profile_image.url}}" class="rounded-circle object-fit-cover"
+                                    style="object-position: 0% 0%;" height="60px" width="60px"
+                                    alt="{{profile.user.username}}">
+                            </a>
+                        </div>
+                        <div class="col text-start">
+                            <a href="{% url 'profile' profile.user.username %}" class="nav-link">
+                                <h5>{{profile.user.username|capfirst}}
+                                    {% if profile.following.count >= 2 %}
+                                    <i class="bi bi-check-circle-fill text-primary"></i>
+                                    {% endif %}
+                                </h5>
+                            </a>
+                            <p class="m-0 form-text">{{profile.created_date}}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    <a href="{% url 'search' %}" class="btn btn-outline-secondary">See More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

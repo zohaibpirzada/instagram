@@ -1,0 +1,45 @@
+{% extends 'base/base.html' %}
+{% block title %}{{edit.Title}}{% endblock title %}
+{% block content %}
+
+<form method="post" enctype="multipart/form-data" class="container border mt-3 rounded" style="height: 40rem;">
+    {% csrf_token %}
+    <div class="row h-100">
+        <!--Image Div-->
+        <div class="col-md border p-2 h-100 flex-column d-flex align-items-center justify-content-center">
+            <div class="my-2 w-100 h-100">
+                <label for="image" style="height: 90%;" class=" mb-3 w-100 flex-column d-flex align-items-center justify-content-center">
+                    <h5 class="w-75">Post Image</h5>
+                    <img src="{{edit.post_image.url}}" class="object-fit-cover" width="60%" height="95%" alt="">
+                </label>
+                {{form.post_image}}
+            </div>
+        </div>
+        <div class="col-md border p-2 h-100">
+            <!--Content Div-->
+            <div class="row px-3 align-content-start h-100">
+                <div class="col py-4" style="height: 75%;">
+                    <div class="h-100 w-100">
+                        <h2>Edit Post</h2>
+                        <div class="my-1">
+                            <label for="title" class="form-label">Title</label>
+                            {{form.Title}}
+                        </div>
+                        <div class="my-2">
+                            <label for="post_body" class="form-label">Description</label>
+                            {{form.body}}
+                        </div>
+                        <div class="my-2">
+                            <label for="post_status" class="form-label">Post Status</label>
+                            {{form.post_status}}
+                        </div>
+                        <hr >
+                        <button type="submit" class="btn btn-outline-primary">Edit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% endblock content %}

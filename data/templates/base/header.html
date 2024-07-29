@@ -1,0 +1,76 @@
+<nav class="navbar  bg-dark border-bottom border-warning border-3 px-2 py-3" data-bs-theme="dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'index' %}">Instagram</a>
+        <button class="navbar-toggler border border-0" type="button" data-bs-toggle="offcanvas"
+            data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="offcanvas w-5 offcanvas-start" tabindex="-1" id="offcanvasRight" 
+            aria-labelledby="offcanvasRightLabel">
+            <div class="offcanvas-header">
+                <a class="navbar-brand" href="{% url 'index' %}">Instagram</a>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                {% if request.user.is_authenticated %}
+                <div class="d-flex align-items-center gap-3 border p-2">
+                    <a href="{% url 'profile' request.user.username %}"><img class="rounded-circle" src="{{request.user.profile.profile_image.url}}" width="70px"
+                            height="70px" style="object-fit: cover; object-position: 0% 0%;" alt="{{request.user.username}}"
+                            title="{{request.user.username|capfirst}}'s Profile"></a>
+                    <div class="col">
+                        <!-- <a href="#" class="nav-link"><h5>{{request.user.username}}</h5></a> -->
+                        <a href="{% url 'profile' request.user.username %}" class="nav-link">
+                            <h5>Profile</h5>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+                <hr>
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 fs-5">
+                    <li class="nav-item">
+                        <a class="nav-link active active" aria-current="page" href="{% url 'index' %}">
+                            <i class="bi bi-house-door fs-3"></i>
+                            Home
+                        </a>
+                    </li>
+                    <!-- <hr class="m-0"> -->
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'search' %}">
+                            <i class="bi bi-search"></i>
+                            Search
+                        </a>
+                    </li>
+                    <!-- <hr class="m-0"> -->
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'explore' %}">
+                            <i class="fa-regular fa-compass"></i>
+                            Explore
+                        </a>
+                    </li>
+                    <!-- <hr class="m-0"> -->
+                    <li class="nav-item">
+                        <a class="nav-link active " href="{% url 'create' %}">
+                            <i class="bi bi-plus-square-dotted"></i>
+                            Create
+                        </a>
+                    </li>
+                    <hr>
+                </ul>
+                <div class="w-100 d-flex justify-content-center mt-2 ">
+                    {% if request.user.is_authenticated %}
+                    <div class="w-90">
+                        <a href="{% url 'logout' %}" class="btn btn-outline-danger px-4 py-2 fw-500">logout</a>
+                        <a href="{% url 'edit' %}" class="btn btn-secondary px-3 py-2">Edit Profile</a>
+                    </div>
+                    {% else %}
+                    <div class="w-50">
+                        <a href="{% url 'login' %}" class="btn btn-outline-success px-4 py-2 fw-500">login</a>
+                        <a href="{% url 'register' %}" class="btn btn-outline-danger px-3 py-2">Register</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,159 @@
+{% extends 'base/base.html' %}
+{% block title %}Home{% endblock title %}
+{% block content %}
+<div style="width: 99%;" class="px-3 mt-2">
+    <div class="row">
+        <div class="col-md-9">
+            <div class="row row-gap-2">
+                {% for posts in following_post %}
+                {% if posts.post_status == "Public" %}
+                <div class="col-md-3">
+                    <div class="card hover-shadow">
+                        <style>
+                            .hover-shadow {
+                                overflow: hidden;
+                            }
+
+                            .hover-overly {
+                                position: relative;
+                            }
+
+                            .overly {
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                background: #000000be;
+                                transition: all 0.3s;
+                                opacity: 0;
+                                z-index: 0;
+                            }
+
+                            .hover-overly:hover>.overly {
+                                transition: all 0.3s;
+                                opacity: 100;
+                                z-index: 2;
+                            }
+
+                            .overly-img {
+                                object-fit: cover;
+                                position: relative;
+                                z-index: 1;
+                            }
+
+                            /*.hover-overly:hover > .overly-img {
+                        object-fit: contain;
+                    } */
+                        </style>
+                        <div class="w-100 d-flex align-items-center justify-content-center hover-overly hover-zoom "
+                            style="height:400px;">
+                            <img src="{{posts.post_image.url}}" class="overly-img w-100 h-100"
+                                style="object-position: 50% 25%;" alt="{{posts.Title}}">
+                            <div class="overly d-flex flex-column align-items-center justify-content-center">
+                                <a href="{% url 'post_page' posts.id %}"
+                                    style="text-decoration: none; position: relative;"
+                                    class="w-100 h-100 text-light d-flex align-items-center justify-content-center column-gap-2">
+                                    <span class="fs-3"> <small>{{posts.like.count}}</small>
+                                        {% if request.user in posts.like.all %}
+                                        <i class="bi text-danger bi-heart-fill "></i>
+                                        {% else %}
+                                        <i class="bi text-danger bi-heart "></i>
+                                        {% endif %}
+                                    </span>
+                                    {% if posts.comment.count == 0 %}
+                                    <span class="fs-3"><i class="bi text-light bi-chat-fill "></i></span>
+                                    {% else %}
+                                    <span class="fs-3"> <small>{{posts.comment.count}}</small> <i class="bi text-light bi-chat-fill "></i></span>
+                                    {% endif %}
+                                    {% if request.user.id == posts.user.id %}
+                                    <span class="fs-5 position-absolute"
+                                        style="width: 30; top: 0; right: 1%; z-index: 3;">
+                                        {{posts.post_status}}
+                                        {% if posts.post_status == "Public" %}
+                                        <i class="fa-solid fa-unlock fs-5"></i>
+                                        {% else %}
+                                        <i class="fa-solid fa-lock fs-5"></i>
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-3 text-center">
+            <img src="{{request.user.profile.profile_image.url}}" class="rounded-circle mb-3" width="200px" height="200px"
+                style="object-fit: cover; object-position: 0% 10%;" alt="{{request.user.profile.user.username}}">
+            {% if request.user.username %}
+            <h3>{{request.user.username|capfirst}}</h3>
+            {% endif %}
+            {% if request.user.profile.user_bio %}
+            <p align="justify">{{request.user.profile.user_bio}}</p>
+            {% endif %}
+            <div class="w-50 justify-content-center column-gap-2 m-auto my-2 fs-3 d-flex">
+                {% if request.user.profile.user_website %}
+                <div class="col-auto"><a target="_blank" title="{{request.user.profile.user_website}}"
+                        href="{{request.user.profile.user_website}}"><i class="bi text-dark bi-globe"></i></a></div>
+                {% endif %}
+                {% if request.user.profile.user_instagram %}
+                <div class="col-auto"><a target="_blank" title="{{request.user.profile.user_instagram}}"
+                        href="{{request.user.profile.user_instagram}}"><i class="bi text-dark bi-instagram"></i></a></div>
+                {% endif %}
+                {% if request.user.profile.user_facebook %}
+                <div class="col-auto"><a target="_blank" title="{{request.user.profile.user_facebook}}"
+                        href="{{request.user.profile.user_facebook}}"><i class="bi text-dark bi-facebook"></i></a></div>
+                {% endif %}
+            </div>
+            <div class="card my-2">
+                <span class="card-header">
+                    <h5><small>{{request.user.userpost_set.count}}</small> Post</h5>
+                </span>
+            </div>
+            <div class="card">
+                <h5 class="card-header"> <small>{{request.user.profile.follow.count}}</small> Follower</h5>
+                <div class="card-body">
+                    {% for following in request.user.profile.follow.all|slice:3 %}
+                    <a href="{% url 'profile' following.user.username %}">@{{following}}</a>
+                    {% if following in request.user.profile.follow.all %}
+                    <a href="{% url 'unfollow' following.user.username %}"><button class="btn p-0">Unfollow</button></a>
+                    {% else %}
+                    <a href="{% url 'follow' following.user.username %}"><button class="btn p-0">Follow</button></a>
+                    {% endif %}
+                    <br>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card mt-3">
+                <h5 class="card-header">{{request.user.profile.following.count}} Following</h5>
+                <div class="card-body">
+                    {% for following in request.user.profile.following.all|slice:3 %}
+                    <a class="card-text"
+                        href="{% url 'profile' following.user.username %}">@{{following.user.username}}</a>
+
+                    {% if following in request.user.profile.follow.all %}
+                    <a class="card-text" href="{% url 'unfollow' following.user.username %}">
+                        <button class="btn p-0 ">Unfollow</button></a>
+                    {% else %}
+                    <a class="card-text" href="{% url 'follow' following.user.username %}"><button
+                            class="btn p-0 ">Follow</button></a>
+                    {% endif %}
+                    <br>
+                    {% endfor %}
+                </div>
+                {% if profile.followers.count > 3 %}
+                <span class="card-footer"><a href="{% url 'following' profile.user.id %}" class="btn">See
+                        More</a></span>
+                {% endif %}
+            </div>
+            <div class="my-2">
+                <a href="{% url 'profile' request.user.username %}"><button
+                        class="btn btn-outline-secondary">Profile</button></a>
+                <a href="{% url 'edit' %}"><button class="btn btn-secondary">Update Profile</button></a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

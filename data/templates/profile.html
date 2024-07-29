@@ -1,0 +1,207 @@
+{% extends 'base/base.html' %}
+{% block title %}{{profile.user.username|capfirst}}'s Profile{% endblock title %}
+{% block content %}
+<div class="row px-3 py-2 justify-content-center align-items-start column-gap-5" style="width: 100%;">
+    <!--left Div-->
+    <div class="col-md-3 border ">
+        <div class="text-center py-3 px-2">
+            <img src="{{profile.profile_image.url}}" class="rounded-circle object-fit-cover"
+                style="object-position: 0% 0%;" alt="{{profile.user.username}}" width="180px" height="180px">
+        </div>
+        <div class="container text-center my-2">
+            <h5>{{profile.user.username}}
+                {% if profile.following.count >= 2 %}
+                <i class="bi bi-check-circle-fill text-primary"></i>
+                {% endif %}
+            </h5>
+        </div>
+        <div class="row mx-auto w-75 text-center justify-content-around">
+            <div class="col-auto"><b>{{post.count}}</b> Post</div>
+                {% if profile.id == 1 %}
+                <div class="col-auto"><b>{{profile.following.count}}M</b> Follower</div>
+                {% else %}
+                <div class="col-auto"><b>{{profile.following.count}}</b> Follower</div>
+                {% endif %}
+            <div class="col-auto"><b>{{profile.follow.count}}</b> Following</div>
+        </div>
+        {% if profile.user.first_name and profile.user.last_name%}
+        <div class="row w-75 mt-3 m-auto">
+            <h6>{{profile.user.first_name}} {{profile.user.last_name}}</h6>
+        </div>
+        {% endif %}
+        {% if profile.user_bio %}
+        <div class="row w-75 my-2 m-auto">
+            <p align="justify" class="m-0">{{profile.user_bio}}</p>
+        </div>
+        {% endif %}
+        <div class="container text-center my-3 ">
+            {% if request.user.id == profile.user.id %}
+            <a href="{% url 'edit' %}" class="btn btn-secondary">Edit Profile</a>
+            {% else %}
+            {% if profile in user.profile.follow.all %}
+            <a href="{% url 'unfollow' profile.user.username %}" class="btn btn-outline-danger ">Unfollow</a>
+            {% else %}
+            {% if profile in user.profile.following.all %}
+            <a href="{% url 'follow' profile.user.username %}" class="btn btn-primary ">Follow Back</a>
+            {% else %}
+            <a href="{% url 'follow' profile.user.username %}" class="btn btn-outline-primary ">Follow</a>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+        </div>
+        <div class="w-50 justify-content-center column-gap-2 m-auto my-2 fs-3 d-flex">
+            {% if profile.user_website %}
+            <div class="col-auto"><a target="_blank" title="{{profile.user_website}}" href="{{profile.user_website}}"><i
+                        class="bi text-dark bi-globe"></i></a></div>
+            {% endif %}
+            {% if profile.user_instagram %}
+            <div class="col-auto"><a target="_blank" title="{{profile.user_instagram}}"
+                    href="{{profile.user_instagram}}"><i class="bi text-dark bi-instagram"></i></a></div>
+            {% endif %}
+            {% if profile.user_facebook %}
+            <div class="col-auto"><a target="_blank" title="{{profile.user_facebook}}"
+                    href="{{profile.user_facebook}}"><i class="bi text-dark bi-facebook"></i></a></div>
+            {% endif %}
+        </div>
+    </div>
+    <!--Center Div-->
+    <div class="col-md border p-2 ">
+        <div class="container text-center">
+            <div class="row row-gap-2">
+                {% if profile.user.id == request.user.id %}
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="w-100 d-flex align-items-center justify-content-center" style="height:300px;">
+                            <a href="{% url 'create' %} " class="nav-link">
+                                <div title="Create Post"
+                                    class="btn btn-outline-secondary d-flex align-items-center justify-content-center rounded-circle"
+                                    style="width: 100px; height: 100px;">
+                                    <i class="fa-solid fa-plus fs-2"></i>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% for posts in post %}
+                <div class="col-md-6">
+                    <div class="card hover-shadow">
+                        <style>
+                            .hover-shadow {
+                                overflow: hidden;
+                            }
+
+                            .hover-overly {
+                                position: relative;
+                            }
+
+                            .overly {
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                background: #000000be;
+                                transition: all 0.3s;
+                                opacity: 0;
+                                z-index: 0;
+                            }
+
+                            .hover-overly:hover>.overly {
+                                transition: all 0.3s;
+                                opacity: 100;
+                                z-index: 2;
+                            }
+
+                            .overly-img {
+                                object-fit: cover;
+                                position: relative;
+                                z-index: 1;
+                            }
+
+                            /*.hover-overly:hover > .overly-img {
+                                object-fit: contain;
+                            } */
+                        </style>
+                        <div class="w-100  d-flex align-items-center justify-content-center hover-overly hover-zoom "
+                            style="height:300px;">
+                            <img src="{{posts.post_image.url}}" class="overly-img w-100 h-100"
+                                style="object-position: 50% 25%;" alt="{{posts.Title}}">
+                            <div class="overly d-flex flex-column align-items-center justify-content-center">
+                                <a href="{% url 'post_page' posts.id %}"
+                                    style="text-decoration: none; position: relative;"
+                                    class="w-100 h-100 text-light d-flex align-items-center justify-content-center column-gap-2">
+                                    <span class="fs-3"> <small>{{posts.like.count}}</small>
+                                        {% if request.user in posts.like.all %}
+                                        <i class="bi text-danger bi-heart-fill "></i>
+                                        {% else %}
+                                        <i class="bi text-danger bi-heart "></i>
+                                        {% endif %}
+                                    </span>
+                                    {% if posts.comment.count == 0 %}
+                                    <span class="fs-3"><i class="bi text-light bi-chat-fill "></i></span>
+                                    {% else %}
+                                    <span class="fs-3"> <small>{{posts.comment.count}}</small> <i class="bi text-light bi-chat-fill "></i></span>
+                                    {% endif %}
+                                    {% if request.user.id == posts.user.id %}
+                                    <span class="fs-5 position-absolute"
+                                        style="width: 30; top: 0; right: 1%; z-index: 3;">
+                                        {{posts.post_status}}
+                                        {% if posts.post_status == "Public" %}
+                                        <i class="fa-solid fa-unlock fs-5"></i>
+                                        {% else %}
+                                        <i class="fa-solid fa-lock fs-5"></i>
+                                        {% endif %}
+                                    </span>
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                {% if request.user.id != profile.user.id %}
+                <div class="card">
+                    <div class="w-100 d-flex align-items-center justify-content-center" style="height:300px;">
+                        <h4>Not Post Yet 🤷‍♂️🤷</h4>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <!--right Div-->
+    <div class="col-md-3 ">
+        <div class="card text-center">
+            <div class="card-header">
+                <b>Suggested</b> Peoples
+            </div>
+            <div class="card-body">
+                {% for profile in user_profiles %}
+                <div class="d-flex column-gap-3">
+                    <div class="col-2">
+                        <a href="{% url 'profile' profile.user.username %}">
+                            <img src="{{profile.profile_image.url}}" class="rounded-circle object-fit-cover"
+                                style="object-position: 0% 0%;" height="60px" width="60px"
+                                alt="{{profile.user.username}}">
+                        </a>
+                    </div>
+                    <div class="col text-start">
+                        <a href="{% url 'profile' profile.user.username %}" class="nav-link">
+                            <h5>{{profile.user.username|capfirst}}
+                                {% if profile.following.count >= 2 %}
+                                <i class="bi bi-check-circle-fill text-primary"></i>
+                                {% endif %}
+                            </h5>
+                        </a>
+                        <p class="m-0 form-text">{{profile.created_date}}</p>
+                    </div>
+                </div>
+                <hr>
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+                <a href="{% url 'search' %}" class="btn btn-outline-secondary">See More</a>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}

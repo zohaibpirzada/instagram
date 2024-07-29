@@ -1,0 +1,55 @@
+{% extends 'base/base.html' %}
+{% block title %}{{user.username|capfirst}}'s Edit{% endblock title %}
+{% block content %}
+<div class="col-md-6 offset-md-3 mt-3 border px-4 py-3">
+    <h1>{{user.username|capfirst}}'s Edit</h1>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3 text-center">
+            <label for="image" title="Profile Pic" class="rounded-circle btn text-center form-label">
+                <div class="container text-center">
+                    <img src="{{request.user.profile.profile_image.url}}" class="border border-3 rounded-circle object-fit-cover" style="object-position: 0% 0%;" width="200px" height="200px" alt="">
+                    <p class="m-0"><b>Current</b></p>
+                </div></label>
+            {{image_form.profile_image}}
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username</label>
+            {{form.username}}
+        </div>
+        <div class="row">
+            <div class="col">
+                <label for="fname" class="form-label">First Name</label>
+                {{form.first_name}}
+            </div>
+            <div class="col">
+                <label for="lname" class="form-label">Last Name</label>
+                {{form.last_name}}
+            </div>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            {{form.email}}
+        </div>
+        <div class="mb-3">
+            <label for="bio" class="form-label">Bio</label>
+            {{image_form.user_bio}}
+        </div>
+        <div class="mb-3">
+            <label for="website" class="form-label">Website</label>
+            {{image_form.user_website}}
+        </div>
+        <div class="mb-3">
+            <label for="facebook" class="form-label">Facebook</label>
+            {{image_form.user_facebook}}
+        </div>
+        <div class="mb-3">
+            <label for="instagram" class="form-label">Instagram</label>
+            {{image_form.user_instagram}}
+        </div>
+        <button type="submit" class="btn btn-outline-secondary">Edit Profile</button>
+    </form>
+
+</div>
+{% endblock content %}

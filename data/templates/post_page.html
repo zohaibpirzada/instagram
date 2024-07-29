@@ -1,0 +1,177 @@
+{% extends 'base/base.html' %}
+{% block title %}{{current_post.Title}}{% endblock title %}
+{% block content %}
+
+<div class="container border mt-3 rounded" style="height: 40rem;">
+    <div class="row h-100">
+        <!--Image Div-->
+        <div class="col-md border p-2 h-100 flex-column d-flex align-items-center justify-content-center">
+            <img src="{{current_post.post_image.url}}" width="75%" height="100%"
+                style="object-fit: contain; object-position: center;" alt="">
+        </div>
+        <div class="col-md border p-2 h-100">
+            <!--Content Div-->
+            <div class="row px-3 h-100">
+                <!--User Profile Div-->
+                <div class="col-13 p-0" style="height: 15%;">
+                    <div class="row w-100 h-100">
+                        <div class="col-2 d-flex align-items-center justify-content-center h-100">
+                            <img src="{{current_post.user.profile.profile_image.url}}"
+                                class="rounded-circle object-fit-cover" style="object-position: 0% 0%;" width="70px"
+                                height="70px" alt="">
+                        </div>
+                        <div class="col-auto d-flex row-gap-0 align-items-start justify-content-center flex-column">
+                            <h4 class="fs-5">{{current_post.user.username}}
+                                {% if current_post.user.profile.following.count >= 2 %}
+                                <i class="bi bi-check-circle-fill text-primary"></i>
+                                {% endif %}
+                            </h4>
+                            <a href="{% url 'profile' current_post.user.username %}" class="text-dark">
+                                <p class="m-0">{{current_post.user.username|lower}}</p>
+                            </a>
+                        </div>
+
+                        <div class="col-auto pt-3 d-flex align-items-start justify-content-center">
+
+                            {% if current_post.user.profile == request.user.profile %}
+                            <a href="{% url 'profile' request.user.username %}" class="btn btn-secondary">Profile</a>
+                            {% else %}
+                            {% if current_post.user.profile in request.user.profile.follow.all %}
+                            <a href="{% url 'unfollow' current_post.user.username %}"
+                                class="btn btn-outline-danger">Unfollow</a>
+                            {% else %}
+                            {% if current_post.user.profile in request.user.profile.following.all %}
+                            <a href="{% url 'follow' current_post.user.username %}" class="btn btn-primary">Follow
+                                back</a>
+                            {% else %}
+                            <a href="{% url 'follow' current_post.user.username %}"
+                                class="btn btn-outline-primary">Follow</a>
+                            {% endif %}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                        <div class="col-auto ms-auto d-flex column-gap-2 align-items-center justify-content-center">
+                            <b class="mt-2">{{current_post.post_status}}</b>
+                            {% if current_post.post_status == "Public" %}
+                            <i class="fa-solid fa-unlock fs-3"></i>
+                            {% else %}
+                            <i class="fa-solid fa-lock fs-3"></i>
+                            {% endif %}
+                            {% if request.user.id == current_post.user.id %}
+                            <div class="dropdown">
+                                <div class="p-0 btn" data-bs-toggle="dropdown" aria-expanded="true">
+                                    <i class="bi fs-3 bi-three-dots-vertical"></i>
+                                </div>
+                                <ul class="dropdown-menu dropdown-menu-start dropdown-menu-lg-start">
+                                    <li><a class="dropdown-item" href="{% url 'edit' current_post.id %}"><i
+                                                class="fa-regular fa-pen-to-square"></i>
+                                            Edit</a></li>
+                                    <li><button type="button" class="dropdown-item text-danger" data-bs-toggle="modal"
+                                            data-bs-target="#delete_model">
+                                            <i class="fa-regular fa-trash-can"></i> Delete
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="delete_model" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog d-flex align-items-center justify-content-center"
+                                    style="height: 80%;">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Post?</h1>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            Are you sure you want to delete this post?
+                                        </div>
+                                        <div
+                                            class="modal-footer d-flex flex-column align-items-center justify-content-center">
+                                            <a href="{% url 'delete' current_post.id %}"
+                                                class="btn btn-outline-dark">Conform</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                    <hr class="m-0">
+                </div>
+                <!--Comment Show Div-->
+                <div class="col-13 " style="height: 75%;">
+                    <div class="h-25 w-100 p-2" style="overflow: auto;">
+                        <h3>{{current_post.Title}}</h3>
+                        <p class="w-75">
+                            {{current_post.body}}
+                            <hr class="m-0"><small>{{current_post.created_date}}</small>
+                        </p>
+                    </div>
+                    <hr class="m-0">
+                    <div class="h-75 w-100">
+                        <div class="w-100">
+                            <form method="post" class="row mt-3 align-items-center w-100">
+                                {% csrf_token %}
+                                <div class="col-2 d-flex align-items-center justify-content-center h-100">
+                                    <img src="{{request.user.profile.profile_image.url}}"
+                                        class="rounded-circle object-fit-cover" style="object-position: 0% 0%;"
+                                        width="70px" height="70px" alt="">
+                                </div>
+                                <div class="col d-flex align-items-center column-gap-2 my-2 w-100">
+                                    {{form.body}}
+                                    <button type="submit" class="btn btn-outline-primary">Send</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="h-75 w-100 py-3 d-flex flex-column align-items-center justify-content-start" style="overflow: auto;">
+                            <h4>{{comment.count}} Comments</h4>
+                            {% for comments in comment %}
+                            <div class="alert alert-dark row" style="width: 95%;" role="alert">
+                                <div class="col-auto d-flex align-items-center justify-content-center h-100">
+                                    <a href="{% url 'profile' comments.user.username %}"><img src="{{comments.user.profile.profile_image.url}}"
+                                        class="rounded-circle object-fit-cover" style="object-position: 0% 0%;"
+                                        width="50px" height="50px" alt=""></a>
+                                </div>
+                                <div class="col d-flex align-items-center column-gap-2 my-2 w-100">
+                                    <p class="m-0"><a href="{% url 'profile' comments.user.username %}" class="text-dark " style="text-decoration: none;">{{comments.user.username|capfirst}}</a><br>
+                                    <b>{{comments.body}}</b></p>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <h5>This Post Have Not Comment 🤷‍♀️</h5>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <hr class="m-0">
+                <!--Like & Unlike share Div-->
+                <div class="col-13 p-0" style="height: 10%;">
+                    <div class="row p-2 justify-content-between px-3">
+                        <div class="col-auto d-flex align-items-center justify-content-center column-gap-3 fs-4 ">
+                            {% if request.user in current_post.like.all %}
+                            <a href="{% url 'unlike' current_post.id %}" class="text-dark"
+                                style="text-decoration: none;">
+                                {{current_post.like.count}}
+                                <i class="bi fs-3 text-danger bi-heart-fill "></i>
+                            </a>
+                            {% else %}
+                            <a href="{% url 'like' current_post.id %}" class="text-dark" style="text-decoration: none;">
+                                {{current_post.like.count}}
+                                <i class="bi fs-3 text-danger bi-heart "></i>
+                            </a>
+                            {% endif %}
+                            <a href="#post_body" class="mb-1"><i class="bi fs-3 text-secondary  bi-chat-fill "></i></a>
+                        </div>
+                        <div class="col-auto fs-4 d-flex align-items-center"><i class="fa-solid fa-share"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
